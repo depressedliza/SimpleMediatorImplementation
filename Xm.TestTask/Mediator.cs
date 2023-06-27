@@ -17,8 +17,8 @@ public class Mediator : IMediator
         _handlerDetails = handlerDetails;
         _serviceProvider = serviceProvider;
     }
-
-    public Task Dispatch(string action, byte[] data)
+    
+    public Task<object> Dispatch(string action, byte[] data)
     {
         var details = GetOrFail(action);
         var handler = _serviceProvider.GetRequiredService(details.ImplementType);
@@ -26,13 +26,13 @@ public class Mediator : IMediator
 
         if (details.MsgType == typeof(byte[]))
         {
-            return method!.Invoke(handler, new object[] { data }) as Task;
+            return method!.Invoke(handler, new object[] { data }) as Task<object>;
         }
-
+        
         var strContent = Encoding.Default.GetString(data);
         if (details.MsgType == typeof(string))
         {
-            return method!.Invoke(handler, new object[] { strContent }) as Task;
+            return method!.Invoke(handler, new object[] { strContent }) as Task<object>;
         }
 
         var content = JsonConvert.DeserializeObject(strContent, details.MsgType);
@@ -42,8 +42,35 @@ public class Mediator : IMediator
             throw new Exception($"Content is null after deserialize\nStr:{strContent}\nTo:{details.MsgType}");
         }
 
-        return method!.Invoke(handler, new [] { content }) as Task;
+        return method!.Invoke(handler, new [] { content }) as Task<object>;
     }
+    
+    // public Task Dispatch(string action, byte[] data)
+    // {
+    //     var details = GetOrFail(action);
+    //     var handler = _serviceProvider.GetRequiredService(details.ImplementType);
+    //     var method = handler.GetType().GetMethod(HandleMethodName);
+    //
+    //     if (details.MsgType == typeof(byte[]))
+    //     {
+    //         return method!.Invoke(handler, new object[] { data }) as Task;
+    //     }
+    //
+    //     var strContent = Encoding.Default.GetString(data);
+    //     if (details.MsgType == typeof(string))
+    //     {
+    //         return method!.Invoke(handler, new object[] { strContent }) as Task;
+    //     }
+    //
+    //     var content = JsonConvert.DeserializeObject(strContent, details.MsgType);
+    //
+    //     if (content is null)
+    //     {
+    //         throw new Exception($"Content is null after deserialize\nStr:{strContent}\nTo:{details.MsgType}");
+    //     }
+    //
+    //     return method!.Invoke(handler, new [] { content }) as Task;
+    // }
 
     public Task<TResponse> Dispatch<TResponse>(string action, byte[] data)
     {

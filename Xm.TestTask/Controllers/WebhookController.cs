@@ -16,11 +16,11 @@ namespace Xm.TestTask.Controllers
         [HttpPost]
         public async Task<IActionResult> HandleAsync()
         {
-            var dataType = "CreateUser"; 
+            var dataType = "SetAction"; 
                 //Request.Headers["x-xdt"].First();
             var dataBody = await ReadRequestBodyAsync();
             
-            return Ok(await _mediator.Dispatch<Guid>("CreateUser", dataBody));
+            return Ok(await _mediator.Dispatch(dataType, dataBody));
         }
 
         private async Task<byte[]> ReadRequestBodyAsync()
