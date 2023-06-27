@@ -2,7 +2,6 @@ using System.Reflection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xm.TestTask.Attr;
 using Xm.TestTask.Interfaces;
-using Xm.TestTask.Mediators;
 using Xm.TestTask.Models;
 
 namespace Xm.TestTask.Extensions;
@@ -45,7 +44,7 @@ public static class AddMediatorExtension
             collection.TryAdd(new ServiceDescriptor(type, type, ServiceLifetime.Transient));
         }
 
-        collection.AddSingleton<IMediator>(x => new Mediator(handlers, x.GetRequiredService));
+        collection.AddSingleton<IMediator>(x => new Mediator(handlers, x));
     }
     
     private static Type GetHandlerInterface(Type implementType)

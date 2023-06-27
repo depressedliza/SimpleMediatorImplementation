@@ -1,6 +1,6 @@
 namespace Xm.TestTask.Interfaces;
 
-public interface IHandler<in TData, TResponse>
+public interface IHandler<TData, TResponse>
 {
     public Task<TResponse> Handle(TData data);
 }
